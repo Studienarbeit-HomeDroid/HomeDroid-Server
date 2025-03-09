@@ -5,6 +5,7 @@
 
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="./annotation.js"></script>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <script type="text/javascript" src="/sh/js/generic.js"></script>
 
@@ -179,14 +180,14 @@ function docalc()
 
 <div class="flex-container">
   <div class="c1">Gesamtstatus vom <span id="TIMESTAMP">01-10-2024 20:50:46</span>
-<table border="1">
+<table border="1" data-annotation="dashboard">
 <!--
 <tr><td>Tag/Nacht<td>Tag</tr>
 <tr><td>Anwesend<td>0|1</tr>
 -->
 <tr><td>Haust&uuml;r<td><div id="EingangTR1"><img src="/sh/icons/open.png" width="64" height="64"></div></tr>
 <tr><td>Unverriegelte Fenster<td><div id="OpenWindows"></div></tr>
-<tr><td>Offene T&uuml;ren<td><div id="OpenDoors"></div></tr>
+<tr><td>Offene T&uuml;ren<td><div id="OpenDoors">5</div></tr>
 <tr><td>Nicht verriegelte T&uuml;ren<td><div id="UnlockedDoors"></div></tr>
 <tr><td>Strombezug<button onclick="RefreshDevices('','StromP');">&#8635;</button><td><div id="StromP">-</div></tr>
 <tr><td>Stromlieferung<button onclick="RefreshDevices('','StromPL');">&#8635;</button><td><div id="StromPL">-</div></tr>
@@ -203,18 +204,18 @@ function docalc()
 </div>  
 
 
-<div class="c3"> <!-- garten -->
+<div class="c3" data-annotation="group" data-info="garden" > <!-- garten -->
 Garten<button onclick="RefreshDevices('Garten','');">&#8635;</button>
 <table border="1">
-<tr><td>Temperatur Garten:<td id="GartenTemp">-</tr>
+<tr><td data-annotation="statusdevice">Temperatur Garten<td id="GartenTemp">-</tr>
 <tr>
-<td>Luftfeuchtigkeit:<td id="WETTER_LF">-</tr>
-<tr><td>Luftdruck:<td><div id="WETTER_LD">-</div></tr>
-<tr><td>Sonnenaufgang:<td><div id="WETTER_SA">-</div></tr>
-<tr><td>Sonnenuntergang:<td><div id="WETTER_SU">-</div></tr>
+<td data-annotation="statusdevice">Luftfeuchtigkeit<td id="WETTER_LF">-</tr>
+<tr><td data-annotation="statusdevice">Luftdruck<td><div id="WETTER_LD">-</div></tr>
+<tr><td data-annotation="statusdevice">Sonnenaufgang<td><div id="WETTER_SA">-</div></tr>
+<tr><td data-annotation="statusdevice">Sonnenuntergang<td><div id="WETTER_SU">-</div></tr>
 <tr><td>Status
     <td><table border="1">
-        <tr><td>Licht<button onclick="History('3/1/6');">H</button><td>Brunnen<button onclick="History('3/1/7');">H</button></tr>
+        <tr><td data-annotation="actiondevice">Licht<button onclick="History('3/1/6');">H</button><td data-annotation="actiondevice">Brunnen<button onclick="History('3/1/7');">H</button></tr>
 	<tr>
 <td align="center"><span id="GartenDose1"><img src="/sh/icons/open.png" width="64" height="64"></span><br>
 (<span id="GartenSchuko1_mA">-</span>)<br>
@@ -247,21 +248,21 @@ Garten<button onclick="RefreshDevices('Garten','');">&#8635;</button>
 
 </div> <!-- Garten -->
 
-<div class="c4">
-<a href="/sh/visu/heizung/temp_aussen.php">Heizung</A><table border="1"><tr><td class="tc1">Stand<td><div id="HZ_DT">-</div></tr><tr><td>Modus<td><div id="HZ_MODUS">-</div></tr><tr><td>Brenner h<td><div id="HZ_BRENNERH">-</div></tr><tr><td>Brennerstarts<td><div id="HZ_BRENNERS">-</div></tr></table>
+<div class="c4" data-annotation="group" data-info="warm">
+<a href="/sh/visu/heizung/temp_aussen.php">Heizung</A><table border="1"><tr><td class="tc1" data-annotation="statusdevice" >Stand<td><div id="HZ_DT">-</div></tr><tr><td data-annotation="statusdevice">Modus<td><div id="HZ_MODUS">-</div></tr><tr><td data-annotation="statusdevice">Brenner h<td><div id="HZ_BRENNERH">-</div></tr><tr><td data-annotation="statusdevice">Brennerstarts<td><div id="HZ_BRENNERS">-</div></tr></table>
 </div>
 </div> <!--Container -->
 
 <div class="flex-container">
-<div class="c1">
+<div class="c1" data-annotation="group" data-info="floor">
 <td>Eingang/Flur<button onclick="RefreshDevices('Flur EG','');">&#8635;</button>
 <table border="1">
-<tr><td class="tc1">Temp<td><div id="EingangTemp">-</div></tr>
+<tr><td class="tc1" data-annotation='tempdevice' >Temp<td><div id="EingangTemp">-</div></tr>
 <tr>
 <td>Status
 <td>
 <table border="1">
-<tr><td>Fenster<br><button onclick="History('1/0/12');">H</button><td>T&uuml;re<br><button onclick="History('1/0/13');">H</button><td>T&uuml;rriegel<br><button onclick="History('1/0/14');">H</button><td>Nachtlicht</tr>
+<tr><td data-annotation="statusdevice">Fenster<br><button onclick="History('1/0/12');">H</button><td data-annotation="statusdevice">T&uuml;re<br><button onclick="History('1/0/13');">H</button><td data-annotation="statusdevice">T&uuml;rriegel<br><button onclick="History('1/0/14');">H</button><td data-annotation="actiondevice">Nachtlicht</tr>
 <tr><td><div id="EingangFenster"><img src="/sh/icons/open.png" width="64" height="64"></div><td><div id="EingangT"><img src="/sh/icons/open.png" width="64" height="64"></div><td><div id="EingangTR2" width="80"><img src="/sh/icons/open.png" width="64" height="64"></div>
 <td>
 <div id="FLUR_NL"><img src="/sh/icons/open.png" width="64" height="64"></div><br>
@@ -280,20 +281,20 @@ Garten<button onclick="RefreshDevices('Garten','');">&#8635;</button>
 </tr></table>
 </div>
 
-<div class="c2"> <!--Element K�che -->
-<B>K&uuml;che</b>
+<div class="c2" data-annotation="group" data-info="restaurant"> <!--Element K�che -->
+K&uuml;che
 <button onclick="RefreshDevices('K\u00fcche','');">&#8635;</button>
 
 <table border="1">
 <tr><td class="tc1">Temp<td>
 <table border="1">
 <tr>
-<td>Flur<td><span id="K_TempLFH2">-</span>
+<td data-annotation='tempdevice'>Flur<td><span id="K_TempLFH2">-</span>
 </tr>
-<td>WZ<td><span id="K_TempLFH">-</span>
+<td data-annotation='tempdevice'>WZ<td><span id="K_TempLFH">-</span>
 </tr>
 <tr>
-<td>MDT<td><span id="K_Temp3">-</span>
+<td data-annotation='tempdevice'>MDT<td><span id="K_Temp3">-</span>
 </tr>
 </table>
 </tr>
@@ -301,7 +302,7 @@ Garten<button onclick="RefreshDevices('Garten','');">&#8635;</button>
 <tr><td>Status<td>
 
 <table border="1">  <!-- Tabelle Status K�che -->
-<tr><td>Fenster<br><button onclick="History('1/0/15;1/0/16');">H</button><td>Hauptlicht<br><button onclick="History('3/1/0');">H</button><td>Nebenlicht<br><button onclick="History('3/1/1');">H</button></tr>
+<tr><td data-annotation="statusdevice">Fenster<br><button onclick="History('1/0/15;1/0/16');">H</button><td data-annotation="actiondevice">Hauptlicht<br><button onclick="History('3/1/0');">H</button><td data-annotation="actiondevice">Nebenlicht<br><button onclick="History('3/1/1');">H</button></tr>
 <tr>
 <td><div id="K_F"><img src="/sh/icons/open.png" width="64" height="64"></div>
 <td align="center"><span id="K_HL"><img src="/sh/icons/open.png" width="64" height="64"></span><br>
@@ -343,16 +344,16 @@ Garten<button onclick="RefreshDevices('Garten','');">&#8635;</button>
 </table> <!-- ENDE Tabelle Status K�che --> <!-- End K�che -->
 </div> <!--Element K�che -->
 
-<div class="c3"> <!--Element WZ -->
+<div class="c3" data-annotation="group" data-info="toilet"> <!--Element WZ -->
 WZ<button onclick="RefreshDevices('Wohnzimmer','');">&#8635;</button>
 
 <table border="1">
-<tr><td class="tc1">Temp<td><div id="WZ_Temp">-</div></tr>
+<tr><td class="tc1" data-annotation='tempdevice'>Temp<td><div id="WZ_Temp">-</div></tr>
 
 <tr><td>Status<td>
 <table border="1">
 <tr>
-<td>Schiebet&uuml;r<td>Fenster<br><button onclick="History('1/0/18');">H</button><td>Terassent&uuml;r<br><button onclick="History('1/0/17');">H</button><td>Nachtlicht
+<td data-annotation="statusdevice">Schiebet&uuml;r<td data-annotation="statusdevice">Fenster<br><button onclick="History('1/0/18');">H</button><td data-annotation="statusdevice">Terassent&uuml;r<br><button onclick="History('1/0/17');">H</button><td data-annotation="actiondevice">Nachtlicht
 </tr>
 
 <tr>
@@ -417,10 +418,10 @@ WZ<button onclick="RefreshDevices('Wohnzimmer','');">&#8635;</button>
 </table>
 </div> <!--Element WZ -->
 
-<div class="c4"> <!--Element b�ro Chris -->
+<div class="c4" data-annotation="group" data-info="computer"> <!--Element b�ro Chris -->
 B&uuml;ro Chris<button onclick="RefreshDevices('B\u00fcro Unten','');">&#8635;</button>
 
-<table border="1"><tr><td class="tc1">Temp<td><div id="EG_BCTemp">-</div></tr><tr><td>Fenster<br><button onclick="History('1/0/20;1/0/21');">H</button><td><div id="EG_BCF"><img src="/sh/icons/open.png" width="64" height="64"></div></tr>
+<table border="1"><tr><td class="tc1" data-annotation='tempdevice'>Temp<td><div id="EG_BCTemp">-</div></tr><tr><td data-annotation="statusdevice">Fenster<br><button onclick="History('1/0/20;1/0/21');">H</button><td><div id="EG_BCF"><img src="/sh/icons/open.png" width="64" height="64"></div></tr>
 
 <tr><td>Rollladen<td>
 <form >
@@ -437,21 +438,21 @@ B&uuml;ro Chris<button onclick="RefreshDevices('B\u00fcro Unten','');">&#8635;</
 
 
 <div class="flex-container"> <!-- Container -->
-<div class="c1"> <!-- Bad -->
+<div class="c1" data-annotation="group" data-info="bath"> <!-- Bad -->
 Bad<button onclick="RefreshDevices('Bad','');">&#8635;</button>
 
 <table border="1" width="100%">
-<tr><td class="tc1">Temp<td>
+<tr><td class="tc1" data-annotation='tempdevice'>Temp<td>
 
 <table>
 <tr>
-<td>Arcus<td><span id="BADTempLFH">-</span>
+<td data-annotation="statusdevice">Arcus<td><span id="BADTempLFH">-</span>
 </tr>
 <tr>
-<td>MDT<td><span id="BADTemp2">-</span>
+<td data-annotation="statusdevice">MDT<td><span id="BADTemp2">-</span>
 </tr>
 <tr>
-<td>Lingg<td><span id="BADTempLFH2">-</span>
+<td data-annotation="statusdevice">Lingg<td><span id="BADTempLFH2">-</span>
 </tr>
 </table>
 </tr>
@@ -460,7 +461,7 @@ Bad<button onclick="RefreshDevices('Bad','');">&#8635;</button>
 
 <table border="1">
 <tr>
-<td>Fenster<br><button onclick="History('1/0/7;1/0/8');">H</button><td>Hauptlicht<br><button onclick="History('3/1/2');">H</button><td>Duschlicht<br><button onclick="History('3/1/3');">H</button><td>HTW<br><button onclick="History('3/1/4');">H</button>
+<td data-annotation="statusdevice">Fenster<br><button onclick="History('1/0/7;1/0/8');">H</button><td data-annotation="actiondevice">Hauptlicht<br><button onclick="History('3/1/2');">H</button><td data-annotation="actiondevice">Duschlicht<br><button onclick="History('3/1/3');">H</button><td data-annotation="actiondevice">HTW<br><button onclick="History('3/1/4');">H</button>
 </tr>
 
 <tr><td><div id="BADFD"><img src="/sh/icons/open.png" width="64" height="64"></div><td align="center">
@@ -497,13 +498,13 @@ Bad<button onclick="RefreshDevices('Bad','');">&#8635;</button>
 </table>
 </div> <!-- Bad -->
 
-<div class="c2"> <!-- kl Bad -->
+<div class="c2" data-annotation="group" data-info="bath"> <!-- kl Bad -->
 kl. Bad<button onclick="RefreshDevices('kl. Bad','');">&#8635;</button>
-<table border="1"><tr><td class="tc1">Temp<td><span id="KLBADTEMPLFH">-</span></tr><tr><td>Fenster<button onclick="History('1/0/3');">H</button><td><div id="KLBADF"><img src="/sh/icons/open.png" width="64" height="64"></div></tr></table>
+<table border="1"><tr><td class="tc1" data-annotation='tempdevice'>Temp<td><span id="KLBADTEMPLFH">-</span></tr><tr><td data-annotation="statusdevice">Fenster<button onclick="History('1/0/3');">H</button><td><div id="KLBADF"><img src="/sh/icons/open.png" width="64" height="64"></div></tr></table>
 
 <br>
 <!-- START Kinderzimmer -->
-Flur OG, Kinderzimmer
+<div data-annotation="group" data-info="child">Flur OG, Kinderzimmer
 <table border="1">
 <tr>
 <td>&nbsp;
@@ -514,35 +515,35 @@ Flur OG, Kinderzimmer
 
 <tr>
 <td>Status
-<td>
+<td data-annotation="statusdevice">
 Fenster<button onclick="History('1/0/4;1/0/5');">H</button><br>
 <div id="OGFF"><img src="/sh/icons/open.png" width="64" height="64"></div>
 
 
-<td>
+<td data-annotation="statusdevice">
 Fenster<button onclick="History('1/0/27');">H</button><br>
 <div id="JULIA_F"><img src="/sh/icons/open.png" width="64" height="64"></div>
 
-<td>
+<td data-annotation="statusdevice">
 Fenster<button onclick="History('1/0/29');">H</button><br>
 <div id="SOPHIE_F"><img src="/sh/icons/open.png" width="64" height="64"></div>
 </tr>
 </table>
+</div>
 <!-- END Kinderzimmer -->
 
 
 </div> <!-- kl Bad -->
 
-<div class="c3"> <!-- Spielzimmer -->
-<!-- START Spielzimmer -->
+<div class="c3" data-annotation="group" data-info="playing" >
 Spielzimmer <button onclick="RefreshDevices('Spielzimmer','');">&#8635;</button>
 
 <table border="1">
-<tr><td class="tc1">Temp<td><div id="SZTemp">-</div></tr>
+<tr><td class="tc1" data-annotation='tempdevice'>Temp<td><div id="SZTemp">-</div></tr>
 <tr><td>Status
 <td><table border="1">
 <tr>
-<td>Links <button onclick="History('1/0/9');">H</button><td>Mitte<button onclick="History('1/0/10');">H</button><td>Rechts<button onclick="History('1/0/11');">H</button><td>Licht<button onclick="History('3/1/5');">H</button>
+<td data-annotation="statusdevice">Links <button onclick="History('1/0/9');">H</button><td data-annotation="statusdevice">Mitte<button onclick="History('1/0/10');">H</button><td data-annotation="statusdevice">Rechts<button onclick="History('1/0/11');">H</button><td data-annotation="actiondevice">Licht<button onclick="History('3/1/5');">H</button>
 </tr>
 <tr>
 <td><div id="SZFL"><img src="/sh/icons/open.png" width="64" height="64"></div>
@@ -572,10 +573,10 @@ Spielzimmer <button onclick="RefreshDevices('Spielzimmer','');">&#8635;</button>
 </tr></table>
 <!-- END Spielzimmer -->
 </div>
-<div class="c4">
+<div class="c4" data-annotation="group" data-info="Washing machine">
 <!-- Start HWR -->
 HWR<button onclick="RefreshDevices('HWR','');">&#8635;</button>
-<table border="1"><tr><td class="tc1">Temp<td id="HWRTemp">-</tr><tr><td>Fenster<br><button onclick="History('1/0/6');">H</button><td><div id="HWRF"><img src="/sh/icons/open.png" width="64" height="64"></div></tr><tr><td>Rollladen<td>
+<table border="1"><tr><td class="tc1" data-annotation='tempdevice'>Temp<td id="HWRTemp">-</tr><tr><td data-annotation="statusdevice">Fenster<br><button onclick="History('1/0/6');">H</button><td><div id="HWRF"><img src="/sh/icons/open.png" width="64" height="64"></div></tr><tr><td>Rollladen<td>
 <form >
 <input type="number" size="3" maxlength="3" id="HWR_R"  style="max-width: 50px;">
 &percnt;
@@ -595,19 +596,19 @@ HWR<button onclick="RefreshDevices('HWR','');">&#8635;</button>
 
 
 <div class="flex-container"> <!-- Container UG -->
-<div class="c1"> <!-- Hobby -->
+<div class="c1" data-annotation="group" data-info="fun" > <!-- Hobby -->
 Hobby<button onclick="RefreshDevices('Hobby','');">&#8635;</button>
-<table border="1"><tr><td class="tc1">Temp<td><span id="HB_TempLFH">-</span></tr><tr><td>VOC<td><span id="HB_VOC">-</span></tr><tr><td>Fenster<br><button onclick="History('1/0/22;1/0/23');">H</button><td><div id="HB_F"><img src="/sh/icons/open.png" width="64" height="64"></div></tr></table>
+<table border="1"><tr><td class="tc1" data-annotation='tempdevice'>Temp<td><span id="HB_TempLFH">-</span></tr><tr><td data-annotation="statusdevice">VOC<td><span id="HB_VOC">-</span></tr><tr><td data-annotation="statusdevice">Fenster<br><button onclick="History('1/0/22;1/0/23');">H</button><td><div id="HB_F"><img src="/sh/icons/open.png" width="64" height="64"></div></tr></table>
 </div> <!-- Hobby -->
 
-<div class="c2"> <!-- Keller Re -->
+<div class="c2" data-annotation="group" data-info="down"> <!-- Keller Re -->
 Keller Rechts<button onclick="RefreshDevices('Keller Rechts','');">&#8635;</button>
 <table border="1"><tr>
 <td class="tc1">Status<td>
 <table border="1">
 <tr>
-<td>Panzerriegel<button onclick="History('1/0/24');">H</button>
-<td>Fenster<button onclick="History('1/0/25');">H</button>
+<td data-annotation="statusdevice">Panzerriegel<button onclick="History('1/0/24');">H</button>
+<td data-annotation="statusdevice">Fenster<button onclick="History('1/0/25');">H</button>
 </tr>
 <tr>
 <td><div id="KR_PR"><img src="/sh/icons/open.png" width="64" height="64"></div>
@@ -616,12 +617,12 @@ Keller Rechts<button onclick="RefreshDevices('Keller Rechts','');">&#8635;</butt
 </table> <!-- Keller RE -->
 </div> <!-- Keller Re -->
 
-<div class="c3"> <!-- �lraum -->
+<div class="c3" data-annotation="group" data-info="oil"> <!-- �lraum -->
 &Ouml;lraum<button onclick="RefreshDevices('\u00d6lraum','');">&#8635;</button>
-<table border="1"><tr><td class="tc1">Fenster<button onclick="History('1/0/26');">H</button><td><div id="OEL_F"><img src="/sh/icons/open.png" width="64" height="64"></div></tr></table>
+<table border="1"><tr><td class="tc1" data-annotation="statusdevice">Fenster<button onclick="History('1/0/26');">H</button><td><div id="OEL_F"><img src="/sh/icons/open.png" width="64" height="64"></div></tr></table>
 </div> <!-- �lraum -->
 
-<div class="c4"> <!-- Keller Li -->
+<div class="c4" data-annotation="group" data-info="down">  <!-- Keller Li -->
 Keller Li
 <table border="1"><tr><td class="tc1">Status<!--Gefrierschrank--><td><div id="KL_GS"><img src="/sh/icons/open.png" width="64" height="64"></div></tr>
 </table>
@@ -631,15 +632,15 @@ Keller Li
 
 
 <div class="flex-container"> <!--Container DG -->
-<div class="c1"> <!-- Schlafzimmer -->
+<div class="c1" data-annotation="group" data-info="sleep"> <!-- Schlafzimmer -->
 Schlafzimmer<button onclick="RefreshDevices('Schlafzimmer','');">&#8635;</button>
 <table border="1">
-<tr><td class="tc1">Temp<td><div id="DG_SZTemp">-</div></tr>
-<tr><td>Fenster<td>
+<tr><td class="tc1" data-annotation='tempdevice'>Temp<td><div id="DG_SZTemp">-</div></tr>
+<tr><td data-annotation="statusdevice">Fenster<td>
 <table border="1">
 <tr>
-<td>Links <button onclick="History('1/0/1')">H</button>
-<td>Rechts <button onclick="History('1/0/2')">H</button>
+<td data-annotation="statusdevice">Links <button onclick="History('1/0/1')">H</button>
+<td data-annotation="statusdevice">Rechts <button onclick="History('1/0/2')">H</button>
 </tr>
 <tr>
 <td><div id="DG_SZFL"><img src="/sh/icons/open.png" width="64" height="64"></div>
@@ -651,18 +652,18 @@ Schlafzimmer<button onclick="RefreshDevices('Schlafzimmer','');">&#8635;</button
 </table>
 </div> <!-- Schlafzimmer -->
 
-<div class="c2"> <!-- B�ro CH -->
+<div class="c2" data-annotation="group" data-info="computer"> <!-- B�ro CH -->
 B&uuml;ro Christian<table border="1"><tr><td class="tc1">Temp<td>
 <table border="0">
 <tr>
-<td>MDT
+<td data-annotation='tempdevice'>MDT
 <td><span id="BCHTemp">-</span><br>
 </tr>
 <tr>
-<td>Heizung
+<td data-annotation='tempdevice'>Heizung
 <td><span id="BCHTemp2">-</span>
 </table>
-</tr><tr><td>Balkont&uuml;re<td><div id="BCHBLKT"><img src="/sh/icons/open.png" width="64" height="64"></div></tr><tr><td>Rollladen<td><div id="BCHR">-</div></tr></table>
+</tr><tr><td data-annotation="statusdevice">Balkont&uuml;re<td><div id="BCHBLKT"><img src="/sh/icons/open.png" width="64" height="64"></div></tr><tr><td>Rollladen<td><div id="BCHR">-</div></tr></table>
 </div> <!-- B�ro CH -->
 
 </div> <!--Container DG -->
@@ -698,10 +699,11 @@ for (var i = 0; i < DeviceList.length; i++)
    {
    var entry = DeviceList[i];
 
+   //entry[5] ist die HTMLID jeder Device, die muss bei der ID im Methodenkopf übergeben werden
    if(entry[5]===ID)
 	{
 	//Erst schalten, dann updaten
-
+        //entry[3] ist die Adresse des Gerätes
         request="/sh/delock/ajax/write_delock_state.php?device="+entry[3]+"&value="+value+"&ID="+entry[5];
 //	console.log("Request"+request);
 
@@ -836,7 +838,7 @@ if(openDoors.length>0)
     $("#OpenDoors").html(openDoorsTxt);        
     }
 else
-    $("#OpenDoors").html("-");        
+    $("#OpenDoors").html("dödel");        
 }
 
 
@@ -1330,9 +1332,12 @@ var DeviceList = [
             $( "#anrufliste" ).html(text);
             });
         });
-
+        console.log("DOM geladen");
 
 </script>
+<script charset="UTF-8" src="public/annotation.js" defer></script>
+
+
 
 </body>
 <html>
