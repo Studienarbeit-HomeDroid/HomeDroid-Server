@@ -39,11 +39,20 @@ app.post('/login', (req, res) => {
 
 // 🔹 **Middleware zum Schutz von Routen**
 const authenticateToken = (req, res, next) => {
-    const token = req.headers['authorization'];
-    if (!token) return res.sendStatus(403);
+    console.log(req.headers);
+    const authHeader = req.headers['authorization'];
+    const token = authHeader.split(' ')[1]
+    if (!token) {
+        console.log("No token");
+        return res.sendStatus(403);
+    }
 
     jwt.verify(token, SECRET_KEY, (err, user) => {
-        if (err) return res.sendStatus(403);
+        if (err) 
+            {
+                console.log("Token invalid");
+                return res.sendStatus(403);
+            }
         req.user = user;
         next();
     });
@@ -51,7 +60,8 @@ const authenticateToken = (req, res, next) => {
 
 // 🔹 **Geschützte Route (nur mit gültigem Token erreichbar)**
 app.get('/protected', authenticateToken, (req, res) => {
-    res.json({ message: "Willkommen in der geschützten API!", user: req.user });
+    console.log(req);
+    res.json({ message: true, user: req.user });
 });
 
 // 🔹 **Statische HTML-Datei ausliefern**
