@@ -23,7 +23,8 @@ wss.on('connection', (ws) => {
         console.log('Empfangene Nachricht: ', jsonMessage);
         wss.clients.forEach((client) => {
             if ( client.readyState === WebSocket.OPEN) {
-                client.send(message);
+                
+                client.send(JSON.stringify(jsonMessage));
             }
         });
     });
@@ -123,12 +124,6 @@ app.get('/simulation', basicAuth,  (req, res) => {
 app.get('/index',  (req, res) => {
     res.sendFile(__dirname + '/protected.html');
 });
-
-
-app.get('/api/dashboard ', (req, res) => {
-    res.json({ status: "closed" });
-});
-
 
 
 

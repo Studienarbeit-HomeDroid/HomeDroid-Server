@@ -1,4 +1,7 @@
-const socket = new WebSocket("wss://homedroid-server.onrender.com");
+const local = "ws://localhost:3000";
+const remote = "wss://homedroid-server.onrender.com";
+
+const socket = new WebSocket(remote);
 
 
 socket.onopen = () => {
@@ -32,13 +35,14 @@ socket.onclose = () => {
 doorstatus = false
 doorstatustext = "geschlossen"
 
-function updateStatus(buttonId, inputId, statusId, typeId) {
+function updateStatus(buttonId, inputId, statusId, typeId, roomType) {
     const status = document.getElementById(statusId);
 
     if(buttonId == "1"){
     {
         status.textContent = doorstatustext;
         message = {
+            "roomtype": roomType,
             "id": buttonId,
             "typeid": typeId,
             "value": doorstatus
@@ -50,6 +54,7 @@ function updateStatus(buttonId, inputId, statusId, typeId) {
     const input = document.getElementById(inputId);
     if (input && status) {
         message = {
+            "roomtype": roomType,
             "id": buttonId,
             "typeid": typeId,
             "value": input.value
@@ -66,37 +71,37 @@ function updateStatus(buttonId, inputId, statusId, typeId) {
 function toggleDoor() {
     doorstatus = !doorstatus;
     doorstatustext = doorstatus ? "offen" : "geschlossen";
-    updateStatus("1", "door-i", "status-door", "1" );
+    updateStatus("1", "door-i", "status-door", "1", "dashboard");
 }
 
 function toggleWindow() {
-    updateStatus("2", "window-input", "status-window", "1");
+    updateStatus("2", "window-input", "status-window", "1"), "dashboard";
 }
 
 function toggleDoors() {
-    updateStatus("3", "doors-input", "status-doors", "1");
+    updateStatus("3", "doors-input", "status-doors", "1", "dashboard");
 }
 
 function toggleBezugPower() {
-    updateStatus("4", "power-bezug-input", "status-power-bezug", "1");
+    updateStatus("4", "power-bezug-input", "status-power-bezug", "1", "dashboard");
 }
 
 function toggleLieferungPower() {
-    updateStatus("4", "power-lieferung-input", "status-power-lieferung", "2");
+    updateStatus("4", "power-lieferung-input", "status-power-lieferung", "2", "dashboard");
 }
 
 function toggleBezugMeter() {
-    updateStatus("5", "meter-bezug-input", "status-meter-bezug", "1");
+    updateStatus("5", "meter-bezug-input", "status-meter-bezug", "1" , "dashboard");
 }
 
 function toggleLieferungMeter() {
-    updateStatus("5", "meter-lieferung-input", "status-meter-lieferung", "2");
+    updateStatus("5", "meter-lieferung-input", "status-meter-lieferung", "2", "dashboard");
 }
 
 function toggleTagesSolar() {
-    updateStatus("6", "solar-tages-input", "status-solar-tages", "1");
+    updateStatus("6", "solar-tages-input", "status-solar-tages", "1", "dashboard");
 }
 
 function toggleGesamtSolar() {
-    updateStatus("6", "solar-gesamt-input", "status-solar-gesamt", "2");
+    updateStatus("6", "solar-gesamt-input", "status-solar-gesamt", "2", "dashboard");
 }
