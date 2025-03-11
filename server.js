@@ -2,10 +2,39 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
+const WebSocket = require('ws');
+const http = require('http');
+
+
 
 const app = express();
 const port = process.env.PORT || 3000;
 const SECRET_KEY = "mein_super_geheimes_token"; 
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+
+wss.on('connection', (ws) => {
+    console.log('Ein Client verbunden');
+    ws.send('Hallo Server!');
+
+    ws.on('message', (message) => {
+        const jsonMessage = JSON.parse(message);
+        console.log('Empfangene Nachricht: ', jsonMessage);
+        wss.clients.forEach((client) => {
+            if ( client.readyState === WebSocket.OPEN) {
+                client.send(message);
+            }
+        });
+    });
+
+    ws.on('close', () => {
+        console.log('Ein Client hat die Verbindung getrennt');
+    });
+});
+
+
+
 
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json()); 
@@ -96,10 +125,14 @@ app.get('/index',  (req, res) => {
 });
 
 
+app.get('/api/dashboard ', (req, res) => {
+    res.json({ status: "closed" });
+});
+
 
 
 
 // 🔹 **Server starten**
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Server läuft auf http://localhost:${port}`);
 });

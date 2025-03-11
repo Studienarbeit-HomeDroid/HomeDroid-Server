@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="/simulation.css">
+    <script src="simulation.js"></script>
+
     <title>SmartHome Simulation</title>
 </head>
 <body>
-    <script src="simulation.js"></script>
     <h1>SmartHome Simulation</h1>
     <div id="dashboard">
         <h2>Dashboard</h2>
         <div id="dashboard-content">
             <div>
                 <p>Haustür</p>
-                <p id="desc">Status</p>
-                <p id="status-door">offen</p>
+                <p id="desc" >Status</p>
+                <p id="status-door">geschlossen</p>
                 <button id="door-button" onclick="toggleDoor()">Öffnen/Schließen</button>
             </div>
             <div>
