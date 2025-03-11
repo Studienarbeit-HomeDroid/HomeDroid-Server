@@ -8,7 +8,7 @@ h1{
     font-size: 1em;
     background-color: inherit;
     border-bottom: 1px solid black;
-    padding-top: 1em;
+    padding-top: 1emç;
     padding-bottom: 1em;
 }
 
@@ -27,8 +27,51 @@ h1{
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-#rooms div h2
+h2
 {
     margin-top: 0;
     font-size: 16px;
+}
+
+#dashboard
+{
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1em;
+}
+
+#dashboard-content
+{
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
+    text-align: center;
+
+}
+
+#dashboard-content div p
+{
+    margin: 5px;
+}
+
+
+#status
+{
+    margin: 0;
+    font-size: 14px;
+    font-weight: lighter;
+}
+
+#desc
+{   
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: normal
+}
+
+#input input
+{
+    width: 5em;
 }

@@ -88,7 +88,7 @@ app.get('/protected', authenticateToken, (req, res) => {
 
 // 🔹 **Statische HTML-Datei ausliefern**
 app.get('/simulation', basicAuth,  (req, res) => {
-    res.sendFile(__dirname + '/simulation.html');
+    res.sendFile(__dirname + '/public/simulation.html');
 });
 
 app.get('/index',  (req, res) => {
