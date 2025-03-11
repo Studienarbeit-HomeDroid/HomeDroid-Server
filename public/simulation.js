@@ -75,7 +75,7 @@ function toggleDoor() {
 }
 
 function toggleWindow() {
-    updateStatus("2", "window-input", "status-window", "1"), "dashboard";
+    updateStatus("2", "window-input", "status-window", "1", "dashboard");
 }
 
 function toggleDoors() {
