@@ -101,7 +101,7 @@ app.post('/login', (req, res) => {
     if (!isPasswordValid) return res.status(401).json({ message: "Falsches Passwort" });
 
     // JWT erzeugen
-    const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, { expiresIn: "1h" });
+    const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY);
 
     res.json({ token });
 });
