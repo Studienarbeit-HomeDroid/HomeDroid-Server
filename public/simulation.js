@@ -45,7 +45,7 @@ function updateStatus(buttonId, inputId, statusId, typeId, roomType) {
             "roomtype": roomType,
             "id": buttonId,
             "typeid": typeId,
-            "value": doorstatus
+            "value": doorstatustext
         }
         socket.send(JSON.stringify(message));
     }
