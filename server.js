@@ -4,35 +4,13 @@ const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const WebSocket = require('ws');
 const http = require('http');
-
-
-
 const app = express();
 const port = process.env.PORT || 3000;
 const SECRET_KEY = "mein_super_geheimes_token"; 
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
+const { changeDashboardValue, getGroupItems, updateDevice, listenToGroupItems } = require("./firebase.js"); 
 
-
-wss.on('connection', (ws) => {
-    console.log('Ein Client verbunden');
-    ws.send('Hallo Server!');
-
-    ws.on('message', (message) => {
-        const jsonMessage = JSON.parse(message);
-        console.log('Empfangene Nachricht: ', jsonMessage);
-        wss.clients.forEach((client) => {
-            if ( client.readyState === WebSocket.OPEN) {
-        
-                client.send(JSON.stringify(jsonMessage));
-            }
-        });
-    });
-
-    ws.on('close', () => {
-        console.log('Ein Client hat die Verbindung getrennt');
-    });
-});
 
 
 
@@ -96,11 +74,9 @@ app.post('/login', (req, res) => {
     const user = users.find(u => u.username === username);
     if (!user) return res.status(400).json({ message: "Benutzer nicht gefunden" });
 
-    // Passwort überprüfen
     const isPasswordValid = bcrypt.compareSync(password, user.password);
     if (!isPasswordValid) return res.status(401).json({ message: "Falsches Passwort" });
 
-    // JWT erzeugen
     const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY);
 
     res.json({ token });
@@ -110,13 +86,49 @@ app.get('/', (req, res) => {
     res.redirect('/simulation');
 });
 
+app.post('/updateDashboard', async (req, res) => {
+    try {
+        await changeDashboardValue(req.body.id, req.body.subTitleId, req.body.newValue);
+        await getGroupItems().then((data) => {
+            console.log("Daten:", data);
+        }
+        );
+        console.log("Update erfolgreich!");
+        res.send("Dashboard-Wert erfolgreich aktualisiert");
+    } catch (error) {
+        console.error("Fehler:", error);
+        res.status(500).send("Fehler beim Aktualisieren des Dashboard-Werts");
+    }
+});
+
+app.post('/updateDevices', async (req, res) => {
+    try {
+        await updateDevice(req.body.groupidString, req.body.deviceId, req.body.type, req.body.newValue);
+        console.log("Update erfolgreich!");
+        res.send("Dashboard-Wert erfolgreich aktualisiert");
+    } catch (error) {
+        console.error("Fehler:", error);
+        res.status(500).send("Fehler beim Aktualisieren des Dashboard-Werts");
+    }
+}); 
+
+
+app.get('/groups', async (req, res) => {
+    try {
+        const groups = await getGroupItems();
+        res.json(groups);
+    } catch (error) {
+        console.error("Fehler beim Laden der Gruppen:", error);
+        res.status(500).send("Fehler beim Laden der Gruppen");
+    }
+});
+
+
 app.get('/protected', authenticateToken, (req, res) => {
     console.log(req);
-    res.json({ message: true, user: req.user });
     res.sendFile(__dirname + '/protected.html');
 });
 
-// 🔹 **Statische HTML-Datei ausliefern**
 app.get('/simulation', basicAuth,  (req, res) => {
     res.sendFile(__dirname + '/public/simulation.html');
 });
@@ -126,8 +138,6 @@ app.get('/index',  (req, res) => {
 });
 
 
-
-// 🔹 **Server starten**
 server.listen(port, () => {
     console.log(`Server läuft auf http://localhost:${port}`);
 });
