@@ -2,6 +2,7 @@ require('dotenv').config();
 const admin = require("firebase-admin");
 const fs = require('fs');
 
+console.log("Firebase Credentials:", process.env.FIREBASE_CREDENTIALS);
 const credentials = Buffer.from(process.env.FIREBASE_CREDENTIALS, 'base64').toString('utf8');
 fs.writeFileSync('./service-account.json', credentials);
 
