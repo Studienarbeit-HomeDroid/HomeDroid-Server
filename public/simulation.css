@@ -99,9 +99,48 @@ h2
 
 }
 
-#dashboard-content div p
+.dashboard-item
 {
-    margin: 5px;
+    background-color: inherit !important;
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.item-title
+{
+    font-size: 14px;
+    margin: 0;
+    margin-bottom: 3px;
+    font-weight: bold;
+}
+
+
+.edit-container-dash
+{
+    display: flex;
+    gap: 1px;
+    padding: 5px;
+    margin: 0;
+    align-items: center;
+}
+
+.door-button
+{
+    margin-top: 5px;
+    background-color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 5px;
+    border: 1px solid black;
+}
+
+.door-button#hover
+{
+    cursor: pointer;
 }
 
 
@@ -112,9 +151,17 @@ h2
     font-weight: lighter;
 }
 
-#desc
+.value
+{
+    font-size: 12px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.desc
 {   
     margin-top: 10px;
+    margin-bottom: 2px;
     font-size: 14px;
     font-weight: normal
 }

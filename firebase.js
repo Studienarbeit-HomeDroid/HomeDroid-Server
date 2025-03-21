@@ -1,8 +1,6 @@
 require('dotenv').config();
 const admin = require("firebase-admin");
-const WebSocket = require('ws');
 const fs = require('fs');
-const wss = new WebSocket.Server({ port: 8080 });
 
 const credentials = Buffer.from(process.env.FIREBASE_CREDENTIALS, 'base64').toString('utf8');
 fs.writeFileSync('./service-account.json', credentials);
@@ -16,28 +14,7 @@ admin.initializeApp({
 
 const db = admin.database();
 
-let clients = [];
 
-wss.on('connection', (ws) => {
-  console.log('Ein Client verbunden');
-  clients.push(ws); 
-  listenToGroupItems((groups) => {
-    console.log("Gruppen aktualisiert:");
-  });
-
-  ws.on('close', () => {
-    console.log('Ein Client hat die Verbindung getrennt');
-    clients = clients.filter(client => client !== ws); 
-  });
-});
-
-function sendToClients(message) {
-  clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(message);
-    }
-  });
-}
 
 /**
  * Aktualisiert einen Wert im Dashboard.
@@ -47,6 +24,7 @@ function sendToClients(message) {
  * @returns {Promise<void>}
  */
 async function changeDashboardValue(id, subTitleId, newValue){
+  console.log("Updating dashboard value:", id-1, subTitleId, newValue);
     const databaseId = parseInt(id) - 1;
     const dashboardRef = db.ref(`dashboard/${databaseId}`);
   
@@ -58,8 +36,8 @@ async function changeDashboardValue(id, subTitleId, newValue){
       }
   
       const dashboard = snapshot.val();
-      const number = parseInt(subTitleId) - 1;
-  
+      const number = parseInt(Number(subTitleId));
+      console.log("Number:", number);
       if (isNaN(number) || number < 0 || number >= dashboard.values.length) {
         console.error("Ungültiger Index oder SubTitleId");
         return;
@@ -156,89 +134,27 @@ async function getGroupItems() {
   }
 }
 
-function listenToGroupItems(callback) {
-  const groupsRef = db.ref("groups");
-  const userId = "user123";
+async function getDashboardItems(){   
+    console.log("Get Dashboard Datas:");
+    const dashboardRef = db.ref("dashboard");
+    dashboardRef.get(snapshot => {
+        console.log(snapshot);
+        if (snapshot.exists()) {
+            const dashboardItems = [];
 
-  groupsRef.child(userId).on("value", (snapshot) => {
-    console.log("Groups found in the data snapshot.");
-      if (snapshot.exists()) {
-          const groups = [];
+            snapshot.forEach(dashboardItemSnapshot => {
+                const dashboardItem = dashboardItemSnapshot.val();
+                dashboardItems.push(dashboardItem);
+            });
+            return dashboardItems;
 
-          snapshot.forEach(groupSnapshot => {
-              const groupId = groupSnapshot.child("id").val();
-              const groupName = groupSnapshot.child("name").val();
-              const groupIconUrl = groupSnapshot.child("iconUrl").val();
+        } else {
+            console.log("No dashboard items found in the data snapshot.");
+        }
 
-              const group = {
-                  id: groupId,
-                  name: groupName,
-                  iconUrl: groupIconUrl,
-                  devices: []
-              };
+    });
 
-              // Lade die Geräte separat
-              groupSnapshot.child("devices").forEach(deviceSnapshot => {
-                  const deviceType = deviceSnapshot.child("type").val();
-                  const deviceData = deviceSnapshot.val();
-
-                  switch (deviceType) {
-                      case "StatusDevice":
-                          group.devices.push({
-                              type: "StatusDevice",
-                              id: deviceData.id,
-                              name: deviceData.name,
-                              description: deviceData.description,
-                              value: deviceData.value || "1", // Defaultwert "1"
-                              unit: deviceData.unit,
-                              group: deviceData.group
-                          });
-                          break;
-
-                      case "ActionDevice":
-                          group.devices.push({
-                              type: "ActionDevice",
-                              id: deviceData.id,
-                              name: deviceData.name,
-                              status: deviceData.status || false, // Defaultwert false
-                              group: deviceData.group
-                          });
-                          break;
-
-                      case "TemperatureDevice":
-                          group.devices.push({
-                              type: "TemperatureDevice",
-                              id: deviceData.id,
-                              name: deviceData.name,
-                              value: deviceData.value,
-                              group: deviceData.group
-                          });
-                          break;
-
-                      default:
-                          console.error("Unknown device type:", deviceType);
-                          break;
-                  }
-              });
-
-              groups.push(group);
-          });
-
-          // Callback aufrufen mit den neuen Daten
-          callback(groups);
-
-          // Die geänderten Daten über WebSocket an die Clients senden
-          sendToClients(JSON.stringify({ type: 'group_update', groups }));
-      } else {
-          console.log("No groups found in the data snapshot.");
-          callback([]);
-      }
-  }, (error) => {
-      console.error("Error in listenToGroupItems:", error);
-  });
 }
-
-
 
 async function updateDevice(groupId, deviceId, type,  newValue) {
   console.log("Updating device:", groupId, deviceId, type, newValue);
@@ -354,4 +270,4 @@ async function updateDeviceInFavorites(deviceId, type, newValue) {
   }
 }
 
-module.exports = { db, changeDashboardValue, getGroupItems, updateDevice, listenToGroupItems };
+module.exports = { db, changeDashboardValue, getGroupItems, updateDevice, getDashboardItems};

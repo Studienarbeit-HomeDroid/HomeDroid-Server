@@ -1,7 +1,10 @@
-const local = "ws://localhost:3000";
-const remote = "wss://homedroid-server.onrender.com";
+const localSocket = "ws://localhost:3000";
+const localAPI = "http://localhost:3000";
+const remoteSocket = "wss://homedroid-server.onrender.com";
+const remoteAPI = "https://homedroid-server.onrender.com";
 let type = true; 
 let groups = []; 
+let dashboardItems = [];
 
 // socket.onopen = () => {
 //     console.log('WebSocket-Verbindung geöffnet');
@@ -31,7 +34,7 @@ let groups = [];
 //     console.log('WebSocket-Verbindung geschlossen');
 // };
 
-const socket = new WebSocket('ws://localhost:8080');
+const socket = new WebSocket(localSocket);
 
 socket.onopen = () => {
     console.log("Verbindung zum Server hergestellt!");
@@ -39,11 +42,17 @@ socket.onopen = () => {
 
 socket.onmessage = (event) => {
     const message = JSON.parse(event.data);
-    groups = message.groups;
-    createGroups();
     if (message.type === 'group_update') {
         console.log("Gruppen aktualisiert:", message.groups);
+        groups = message.groups;
+        createGroups();
     }
+    if (message.type === 'dashboard_update') {
+        console.log("Dashboard datas:", message.dashboardItems);
+        dashboardItems = message.dashboardItems;
+        createDashboard()
+    }
+
 };
 
 // document.addEventListener("DOMContentLoaded", async (event) => {
@@ -69,7 +78,8 @@ running = false
 
 function startSimulation() {
     running = true;
-    randomDeviceAction(true);
+    //randomDeviceAction(true);
+    randomDashboardAction(true);
     stopbtn = document.getElementById("stop-btn");
     stopbtn.className = ""
     stopbtn.disabled = false;
@@ -87,6 +97,42 @@ function stopSimulation() {
     startbtn.className = ""
     startbtn.disabled = false;
 }
+
+randomDashboardAction = (type) => {
+    if (!running || dashboardItems.length === 0) {
+        return;
+    }
+    
+    console.log("Dashboard Simulation Started");
+
+    const randomElement = dashboardItems[getRandomInt(0, dashboardItems.length - 1)];
+
+    if (randomElement.values.length > 0) {
+        const randomIndex = getRandomInt(0, randomElement.values.length - 1);
+
+        if (randomElement.id == "1") {
+            doorstatustext = getRandomBool() ? "offen" : "geschlossen";
+            updateDashboard(randomElement.id, randomIndex, null, `dash-value-${randomElement.id}${randomIndex}`);
+        } else {
+            let result = getRandomBool() ? parseInt(randomElement.values[randomIndex]) + 1 : parseInt(randomElement.values[randomIndex]) - 1;
+            if(result < 0) result = result * -1;
+            let inputId = `input-dash-${randomElement.id}${randomIndex}`;
+            let statusId = `dash-value-${randomElement.id}${randomIndex}`;
+            
+            let input = document.getElementById(inputId);
+            if (input) input.value = result;
+
+            let statusvalue = document.getElementById(statusId);
+            if (statusvalue) statusvalue.textContent = result;
+
+            updateDashboard(randomElement.id, randomIndex, inputId, statusId);
+        }
+    }
+
+    if (type) {
+        setTimeout(() => randomDashboardAction(true), 1000);
+    }
+};
 
 randomDeviceAction = (type) => {
     if(!running)
@@ -132,6 +178,65 @@ randomDeviceAction = (type) => {
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getRandomBool() {
+    return Math.random() < 0.5;
+}
+
+function createDashboard() {
+    const dashboardcontainer = document.getElementById("dashboard-content");
+    dashboardcontainer.innerHTML = '';
+    dashboardItems.forEach(element => {
+        const div = document.createElement("div");
+        div.className = "dashboard-item";
+        const p = document.createElement("p");
+        p.className = "item-title"
+        p.textContent = element.title;
+        div.appendChild(p);
+        element.subtitle.forEach((subtitle,index) => {
+            const description = document.createElement("p");
+            description.className = "desc";
+            description.textContent = subtitle;
+            const value = document.createElement("p");
+            value.textContent = element.values[index];
+            value.className = "value";
+            value.id = `dash-value-${element.id}${index}`;
+            div.appendChild(description);
+            div.appendChild(value);
+            if(element.id == "1")
+            {
+                const button = document.createElement("button");
+                button.className = "door-button";
+                button.textContent = "öffen/schließen";
+                button.onclick = () => updateDashboard(element.id, index, null, `dash-value-${element.id}${index}`);
+                div.appendChild(button);
+            }
+            else
+            {
+            const editcontainer = document.createElement("div");
+            const input = document.createElement("input");
+            const button = document.createElement("button");
+            button.textContent = "✅";
+            button.className = "edit-button-dash";
+            button.onclick = () => updateDashboard(element.id, index, `input-dash-${element.id}${index}`, `dash-value-${element.id}${index}`);
+            editcontainer.className = "edit-container-dash";
+            input.className = "edit-input";
+            input.type = "number";
+            input.id = `input-dash-${element.id}${index}`;
+            editcontainer.appendChild(input);
+            editcontainer.appendChild(button);
+            div.appendChild(editcontainer);
+            }
+        }); 
+                
+
+        dashboardcontainer.appendChild(div);
+
+        
+
+    });
+
 }
 
 
@@ -244,7 +349,8 @@ function createGroups()
 
         }
 
-        const response = await fetch("http://localhost:3000/updateDevices", {
+        const url = localAPI+"/updateDevices";
+        const response = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -273,12 +379,16 @@ async function updateDashboard(id, subTitleId, inputId, statusId) {
     if(id != "1"){
         input = document.getElementById(inputId);
     }else{
-        input = inputId
+        doorstatus = !doorstatus;
+        doorinput = {value: doorstatus ? "offen" : "geschlossen"};
+        input = doorinput;
     }
     const status = document.getElementById(statusId);
     status.textContent = input.value;
 
-    const response = await fetch("http://localhost:3000/updateDashboard", {
+    const url = localAPI+"/updateDashboard";
+    console.log(id,subTitleId,inputId,statusId, input.value);
+    const response = await fetch(url, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

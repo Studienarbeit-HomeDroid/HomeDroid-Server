@@ -9,14 +9,141 @@ const port = process.env.PORT || 3000;
 const SECRET_KEY = "mein_super_geheimes_token"; 
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
-const { changeDashboardValue, getGroupItems, updateDevice, listenToGroupItems } = require("./firebase.js"); 
-
+const {db , changeDashboardValue, getGroupItems, updateDevice, getDashboardItems} = require("./firebase.js"); 
 
 
 
 
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json()); 
+
+let clients = [];
+
+wss.on('connection', (ws) => {
+  console.log('Ein Client verbunden');
+  clients.push(ws); 
+  listenToGroupItems((groups) => {
+    console.log("Gruppen aktualisiert:");
+  });
+  listenToDashboardItems((dashboardItems) => {
+    console.log("Dashboard aktualisiert:");
+  });
+
+  ws.on('close', () => {
+    console.log('Ein Client hat die Verbindung getrennt');
+    clients = clients.filter(client => client !== ws); 
+  });
+});
+
+function sendToClients(message) {
+  clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(message);
+    }
+  });
+}
+const userId = "user123";
+
+function  listenToGroupItems(callback) {
+  const groupsRef = db.ref("groups");
+
+  groupsRef.child(userId).on("value", (snapshot) => {
+    console.log("Groups found in the data snapshot.");
+      if (snapshot.exists()) {
+          const groups = [];
+
+          snapshot.forEach(groupSnapshot => {
+              const groupId = groupSnapshot.child("id").val();
+              const groupName = groupSnapshot.child("name").val();
+              const groupIconUrl = groupSnapshot.child("iconUrl").val();
+
+              const group = {
+                  id: groupId,
+                  name: groupName,
+                  iconUrl: groupIconUrl,
+                  devices: []
+              };
+
+              // Lade die Geräte separat
+              groupSnapshot.child("devices").forEach(deviceSnapshot => {
+                  const deviceType = deviceSnapshot.child("type").val();
+                  const deviceData = deviceSnapshot.val();
+
+                  switch (deviceType) {
+                      case "StatusDevice":
+                          group.devices.push({
+                              type: "StatusDevice",
+                              id: deviceData.id,
+                              name: deviceData.name,
+                              description: deviceData.description,
+                              value: deviceData.value || "1", // Defaultwert "1"
+                              unit: deviceData.unit,
+                              group: deviceData.group
+                          });
+                          break;
+
+                      case "ActionDevice":
+                          group.devices.push({
+                              type: "ActionDevice",
+                              id: deviceData.id,
+                              name: deviceData.name,
+                              status: deviceData.status || false, // Defaultwert false
+                              group: deviceData.group
+                          });
+                          break;
+
+                      case "TemperatureDevice":
+                          group.devices.push({
+                              type: "TemperatureDevice",
+                              id: deviceData.id,
+                              name: deviceData.name,
+                              value: deviceData.value,
+                              group: deviceData.group
+                          });
+                          break;
+
+                      default:
+                          console.error("Unknown device type:", deviceType);
+                          break;
+                  }
+              });
+
+              groups.push(group);
+          });
+
+          callback(groups);
+
+          sendToClients(JSON.stringify({ type: 'group_update', groups }));
+      } else {
+          console.log("No groups found in the data snapshot.");
+          callback([]);
+      }
+  }, (error) => {
+      console.error("Error in listenToGroupItems:", error);
+  });
+}
+
+function listenToDashboardItems(dashboardItems){   
+    console.log("Dashboard aktualisiert:", dashboardItems);
+    const dashboardRef = db.ref("dashboard");
+    dashboardRef.on("value", (snapshot) => {
+        console.log(snapshot);
+        if (snapshot.exists()) {
+            const dashboardItems = [];
+
+            snapshot.forEach(dashboardItemSnapshot => {
+                const dashboardItem = dashboardItemSnapshot.val();
+                dashboardItems.push(dashboardItem);
+            });
+
+            sendToClients(JSON.stringify({ type: 'dashboard_update', dashboardItems }));
+        } else {
+            console.log("No dashboard items found in the data snapshot.");
+        }
+
+    });
+
+    }
 
 const users = [
     {
@@ -89,10 +216,6 @@ app.get('/', (req, res) => {
 app.post('/updateDashboard', async (req, res) => {
     try {
         await changeDashboardValue(req.body.id, req.body.subTitleId, req.body.newValue);
-        await getGroupItems().then((data) => {
-            console.log("Daten:", data);
-        }
-        );
         console.log("Update erfolgreich!");
         res.send("Dashboard-Wert erfolgreich aktualisiert");
     } catch (error) {
@@ -137,6 +260,7 @@ app.get('/index',  (req, res) => {
     res.sendFile(__dirname + '/protected.html');
 });
 
+module.exports = { sendToClients };
 
 server.listen(port, () => {
     console.log(`Server läuft auf http://localhost:${port}`);
