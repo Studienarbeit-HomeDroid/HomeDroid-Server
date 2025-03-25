@@ -386,7 +386,7 @@ async function updateDashboard(id, subTitleId, inputId, statusId) {
     const status = document.getElementById(statusId);
     status.textContent = input.value;
 
-    const url = remoteAPIAPI+"/updateDashboard";
+    const url = remoteAPI+"/updateDashboard";
     console.log(id,subTitleId,inputId,statusId, input.value);
     const response = await fetch(url, {
         method: "POST",
