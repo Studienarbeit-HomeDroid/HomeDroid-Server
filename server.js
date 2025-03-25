@@ -252,6 +252,11 @@ app.get('/protected', authenticateToken, (req, res) => {
     res.sendFile(__dirname + '/protected.html');
 });
 
+app.get('/index', basicAuth, (req, res) => {
+    console.log(req);
+    res.sendFile(__dirname + '/protected.html');
+});
+
 app.get('/simulation', basicAuth,  (req, res) => {
     res.sendFile(__dirname + '/public/simulation.html');
 });

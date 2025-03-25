@@ -1,18 +1,20 @@
 require('dotenv').config();
+const { json } = require('body-parser');
 const admin = require("firebase-admin");
 const fs = require('fs');
-const serviceAccountPath = "/etc/secrets/service-account.json"
+//const serviceAccountPath = "/etc/secrets/service-account.json"
 
-// console.log("Firebase Credentials:", process.env.FIREBASE_CREDENTIALS);
-// const credentials = Buffer.from(process.env.FIREBASE_CREDENTIALS, 'base64').toString('utf8');
-// fs.writeFileSync('./service-account.json', credentials);
+console.log("Firebase Credentials:", process.env.FIREBASE_CREDENTIALS);
+const credentials = Buffer.from(process.env.FIREBASE_CREDENTIALS, 'base64').toString('utf8');
+fs.writeFileSync('./service-account.json', credentials);
 
-const serviceAccount = require(serviceAccountPath);
+//const serviceAccount = require(serviceAccountPath);
 
 
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  //credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert(JSON.parse(credentials)),
   databaseURL: "https://homedroid-728c6-default-rtdb.firebaseio.com/"
 });
 
