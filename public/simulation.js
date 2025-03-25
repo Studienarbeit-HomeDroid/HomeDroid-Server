@@ -34,7 +34,7 @@ let dashboardItems = [];
 //     console.log('WebSocket-Verbindung geschlossen');
 // };
 
-const socket = new WebSocket(localSocket);
+const socket = new WebSocket(remoteSocket);
 
 socket.onopen = () => {
     console.log("Verbindung zum Server hergestellt!");
@@ -349,7 +349,7 @@ function createGroups()
 
         }
 
-        const url = localAPI+"/updateDevices";
+        const url = remoteAPI+"/updateDevices";
         const response = await fetch(url, {
             method: "POST",
             headers: {
@@ -386,7 +386,7 @@ async function updateDashboard(id, subTitleId, inputId, statusId) {
     const status = document.getElementById(statusId);
     status.textContent = input.value;
 
-    const url = localAPI+"/updateDashboard";
+    const url = remoteAPIAPI+"/updateDashboard";
     console.log(id,subTitleId,inputId,statusId, input.value);
     const response = await fetch(url, {
         method: "POST",
